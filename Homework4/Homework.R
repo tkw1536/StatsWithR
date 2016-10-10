@@ -19,7 +19,7 @@ ex1
 ## 1a) the academic program was choosen by the largest fraction with high ses
 ## 1b) 34.04255% of low income students selected the general program 
 ex1 / rowSums(ex1, na.rm = T) 
-## 1c) In the academic program, there are more students with middle academic status. 
+## 1c) In the academic program, there are more students with middle social economic status. 
 ## 1d) The least frequent combination of variables is vocation / high ses
 
 ### Exercise 2
@@ -36,6 +36,11 @@ studentcopy[studentcopy$prog != "academic",]$academicProgram <- "no"
 # compute the odds ratio
 ex2b <- xtabs(~ ses + academicProgram, data=studentcopy)
 oddsratio(ex2b)
+
+# low / middle = 19 / 44 = 0.43
+19 / 44
+# low / high = 19 /42 = 0.45
+19 / 42
 
 ## Exercise 3
 ex3 <- chisq.test(ex1)
@@ -54,6 +59,7 @@ ex4a_m <- xtabs(~ ses + prog, data=stud_male)
 
 sq4a_f <- chisq.test(ex4a_f)
 sq4a_f # females : not significant
+sq4a_m <- chisq.test(ex4a_m)
 sq4a_m # males: significant
 
 ## 4b) 
@@ -73,6 +79,8 @@ AIC(ex5)
 summary(ex5, cor=FALSE, Wald=TRUE)
 z <- summary(ex5, cor=FALSE, Wald=TRUE)$Wald.ratios 
 p <- (1 - pnorm(abs(z), 0, 1))*2
+p
+p < 0.05
 # signigicant: academic / intercept, academic/math, academic/science, vocation/sesmiddle
 
 ## Exercise 6
@@ -86,13 +94,12 @@ logLik(ex6)
 ## Exercise 7
 ## TODO: Do the averaging properly
 ## we need to predict for high/private, middle/private, low/private, high/public, middle/public, low/public
-ex7data <- expand.grid(ses = c("low", "middle", "high"), schtyp=c("public","private"), read=mean(student$read), math=mathmean, science = mean(student$science))
+ex7data <- expand.grid(ses = c("low", "middle", "high"), schtyp=c("public","private"), read=mean(student$read), math=mean(student$math), science = mean(student$science))
 ex7data
-ex7scores <- predict(ex6, ex7data, "probs")
-sapply(levels(student$ses), function(l){mean(ex7scores[ex7data$ses==l,])})
+predict(ex6, ex7data, "probs")
 
 ## Exercise 8
-ex8data <- expand.grid(ses = c("low", "middle", "high"), schtyp=c("public","private"), read=mean(student$read), math=mathmean, science = seq(30, 80, 1))
+ex8data <- expand.grid(ses = c("low", "middle", "high"), schtyp=c("public","private"), read=mean(student$read), math=mean(student$math), science = seq(30, 80, 1))
 ex8data
 ex8preds <- predict(ex6, ex8data, "probs")
-sapply(levels(student$ses), function(l){mean(ex8preds[ex8data$ses==l,])})
+sapply(levels(student$ses), function(s){apply(data.frame(ex8preds[ex8data$ses == s, ]), 2, mean)})
