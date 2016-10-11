@@ -12,6 +12,8 @@ library(reshape2)
 
 # read all the data from the internets
 student <- read.dta("http://www.ats.ucla.edu/stat/data/hsbdemo.dta")
+# load("../Files/homeworks/hw4/hsbdemo.Rdata")
+# student <- hsbdemo
 
 ### Exercise 1
 ex1 <- xtabs(~ ses + prog, data=student)
@@ -44,6 +46,7 @@ oddsratio(ex2b)
 
 ## Exercise 3
 ex3 <- chisq.test(ex1)
+ex3
 ## 3a) As p <0.05, the chi^2 test statistic is significant. 
 ## 3b) The expected frequencies are higher in low/academic, middle/general, middle/academic, high/general, high/vocation
 ex3$expected > ex1
